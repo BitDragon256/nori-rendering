@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Handcrafted -->
+<scene>
+	<integrator type="bsdfpath">
+		<integer name="maxBounces" value="10"/>
+		<integer name="rrMinBounces" value="3"/>
+	</integrator>
+
+	<sampler type="independent">
+		<integer name="sampleCount" value="128"/>
+	</sampler>
+
+	<camera type="perspective">
+		<transform name="toWorld">
+			<lookat origin="2, 0.42, 0" target="0, 0.42, 0" up="0, 1, 0"/>
+		</transform>
+		<float name="fov" value="30"/>
+		<integer name="width" value="512"/>
+		<integer name="height" value="512"/>
+	</camera>
+
+	<emitter type="envmap">
+		<string name="filename" value="textures/pisa_lowres.exr"/>
+		<boolean name="useIS" value="true"/>
+	</emitter>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/teapot.obj"/>
+		<transform name="toWorld">
+			<scale value="0.1, 0.1, 0.1"/>
+			<rotate axis="0, 1, 0" angle="-40"/>
+		</transform>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.9, 0.9, 0.9"/>
+		</bsdf>
+	</mesh>
+</scene>

@@ -1,0 +1,10 @@
+.idea/
+.vscode/
+
+build/
+cmake-build-debug-mingw/
+cmake-build-debug-visual-studio/
+cmake-build-relwithdebinfo-visual-studio/
+cmake-build-release-visual-studio/
+
+ext/

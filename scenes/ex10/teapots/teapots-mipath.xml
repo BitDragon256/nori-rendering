@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Handcrafted -->
+<scene>
+	<integrator type="mipath">
+		<integer name="maxBounces" value="10"/>
+		<integer name="rrMinBounces" value="3"/>
+	</integrator>
+
+	<sampler type="independent">
+		<integer name="sampleCount" value="128"/>
+	</sampler>
+
+	<camera type="perspective">
+		<transform name="toWorld">
+			<lookat origin="3, 2, 1" target="-0.5, 0.25, 0.1" up="0, 1, 0"/>
+		</transform>
+		<float name="fov" value="50"/>
+		<integer name="width" value="512"/>
+		<integer name="height" value="288"/>
+	</camera>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/base.obj"/>
+		<bsdf type="diffuse">
+			<texture type="checkerboard">
+				<color name="color0" value="0.4, 0.4, 0.4"/>
+				<color name="color1" value="0.6, 0.6, 0.6"/>
+				<float name="uvscale" value="24"/>
+			</texture>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/emitter.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0, 0, 0"/>
+		</bsdf>
+		<emitter type="area">
+			<color name="radiance" value="10, 10, 10"/>
+		</emitter>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/teapot.obj"/>
+		<transform name="toWorld">
+			<rotate axis="0, 1, 0" angle="-65"/>
+			<scale value="0.1, 0.1, 0.1"/>
+			<translate value="0, 0, 1.2"/>
+		</transform>
+		<!-- silver -->
+		<bsdf type="roughconductor">
+			<color name="eta" value="0.15522, 0.116692, 0.138342"/>
+			<color name="k" value="4.827, 3.12139, 2.14636"/>
+			<float name="alpha" value="0.1"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/teapot.obj"/>
+		<transform name="toWorld">
+			<rotate axis="0, 1, 0" angle="-65"/>
+			<scale value="0.1, 0.1, 0.1"/>
+			<translate value="0, 0, 0"/>
+		</transform>
+		<bsdf type="mixture">
+			<float name="weight" value="0.5"/>
+			<bsdf type="diffuse">
+				<color name="albedo" value="0.9, 0.6, 0.6"/>
+			</bsdf>
+			<!-- silver -->
+			<bsdf type="roughconductor">
+				<color name="eta" value="0.15522, 0.116692, 0.138342"/>
+				<color name="k" value="4.827, 3.12139, 2.14636"/>
+				<float name="alpha" value="0.1"/>
+			</bsdf>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/teapot.obj"/>
+		<transform name="toWorld">
+			<rotate axis="0, 1, 0" angle="-65"/>
+			<scale value="0.1, 0.1, 0.1"/>
+			<translate value="0, 0, -1.2"/>
+		</transform>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.9, 0.6, 0.6"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/teapot.obj"/>
+		<transform name="toWorld">
+			<rotate axis="0, 1, 0" angle="-65"/>
+			<scale value="0.1, 0.1, 0.1"/>
+			<translate value="-1.2, 0, 0.6"/>
+		</transform>
+		<bsdf type="mixture">
+			<float name="weight" value="0.25"/>
+			<!-- gold -->
+			<bsdf type="conductor">
+				<color name="eta" value="0.143085, 0.374852, 1.44208"/>
+				<color name="k" value="3.98205, 2.38506, 1.60276"/>
+			</bsdf>
+			<!-- silver -->
+			<bsdf type="roughconductor">
+				<color name="eta" value="0.15522, 0.116692, 0.138342"/>
+				<color name="k" value="4.827, 3.12139, 2.14636"/>
+				<float name="alpha" value="0.1"/>
+			</bsdf>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/teapot.obj"/>
+		<transform name="toWorld">
+			<rotate axis="0, 1, 0" angle="-65"/>
+			<scale value="0.1, 0.1, 0.1"/>
+			<translate value="-1.2, 0, -0.6"/>
+		</transform>
+		<bsdf type="mixture">
+			<float name="weight" value="0.75"/>
+			<bsdf type="diffuse">
+				<color name="albedo" value="0.9, 0.6, 0.6"/>
+			</bsdf>
+			<!-- gold -->
+			<bsdf type="conductor">
+				<color name="eta" value="0.143085, 0.374852, 1.44208"/>
+				<color name="k" value="3.98205, 2.38506, 1.60276"/>
+			</bsdf>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/teapot.obj"/>
+		<transform name="toWorld">
+			<rotate axis="0, 1, 0" angle="-65"/>
+			<scale value="0.1, 0.1, 0.1"/>
+			<translate value="-2.4, 0, 0"/>
+		</transform>
+		<!-- gold -->
+		<bsdf type="conductor">
+			<color name="eta" value="0.143085, 0.374852, 1.44208"/>
+			<color name="k" value="3.98205, 2.38506, 1.60276"/>
+		</bsdf>
+	</mesh>
+</scene>

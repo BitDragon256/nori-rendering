@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- MI test scene from Eric Veach's thesis - modeled
+     after a file by Steve Marschner (CS667) -->
+
+<scene>
+	<integrator type="mipath">
+		<integer name="maxBounces" value="10"/>
+		<integer name="rrMinBounces" value="3"/>
+	</integrator>
+
+	<sampler type="independent">
+		<integer name="sampleCount" value="128"/>
+	</sampler>
+
+	<camera type="perspective">
+		<transform name="toWorld">
+			<lookat origin="0, 2, 15" target="0, 1.69522, 14.0476" up="0, 0.952424, -0.304776"/>
+		</transform>
+		<float name="fov" value="41.0108"/>
+		<integer name="width" value="768"/>
+		<integer name="height" value="512"/>
+	</camera>
+
+	<!-- distant light to provide overall illumination -->
+	<mesh type="obj">
+		<string name="filename" value="meshes/sphere.obj"/>
+		<transform name="toWorld">
+			<scale value="0.5, 0.5, 0.5"/>
+			<translate value="10, 10, 4"/>
+		</transform>
+		<emitter type="area">
+			<color name="radiance" value="800, 800, 800"/>
+		</emitter>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0,0,0"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/sphere.obj"/>
+		<transform name="toWorld">
+			<scale value="0.1, 0.1, 0.1"/>
+			<translate value="-1.25, 0, 0"/>
+		</transform>
+		<emitter type="area">
+			<color name="radiance" value="125, 125, 50"/>
+		</emitter>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0,0,0"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/sphere.obj"/>
+		<transform name="toWorld">
+			<scale value="0.03333, 0.03333, 0.03333"/>
+			<translate value="-3.75, 0, 0"/>
+		</transform>
+		<emitter type="area">
+			<color name="radiance" value="1803.606 450.9015 450.9015"/>
+		</emitter>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0,0,0"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/sphere.obj"/>
+		<transform name="toWorld">
+			<scale value="0.3, 0.3, 0.3"/>
+			<translate value="1.25, 0, 0"/>
+		</transform>
+		<emitter type="area">
+			<color name="radiance" value="5.55555 22.2222 5.55555"/>
+		</emitter>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0,0,0"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/sphere.obj"/>
+		<transform name="toWorld">
+			<scale value="0.9, 0.9, 0.9"/>
+			<translate value="3.75, 0, 0"/>
+		</transform>
+		<emitter type="area">
+			<color name="radiance" value="0.3086425 0.9259275 2.46914"/>
+		</emitter>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0,0,0"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/plate1.obj"/>
+		<!--<bsdf type="mixture">
+			<float name="weight" value="0.13"/>
+			<bsdf type="diffuse">
+				<color name="albedo" value="0.54,0.69,1.00"/>
+			</bsdf>
+			<bsdf type="roughconductor">
+				<color name="eta" value="2, 2, 2"/>
+				<color name="k" value="0, 0, 0"/>
+				<float name="alpha" value="0.005"/>
+			</bsdf>
+		</bsdf>-->
+		<bsdf type="phong">
+			<color name="diffuse" value="0.07 0.09 0.13"/>
+			<color name="specular" value="0.5 0.5 0.5"/>
+			<float name="exponent" value="80000"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/plate2.obj"/>
+		<!--<bsdf type="mixture">
+			<float name="weight" value="0.13"/>
+			<bsdf type="diffuse">
+				<color name="albedo" value="0.54,0.69,1.00"/>
+			</bsdf>
+			<bsdf type="roughconductor">
+				<color name="eta" value="2, 2, 2"/>
+				<color name="k" value="0, 0, 0"/>
+				<float name="alpha" value="0.02"/>
+			</bsdf>
+		</bsdf>-->
+		<bsdf type="phong">
+			<color name="diffuse" value="0.07 0.09 0.13"/>
+			<color name="specular" value="0.5 0.5 0.5"/>
+			<float name="exponent" value="5000"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/plate3.obj"/>
+		<!--<bsdf type="mixture">
+			<float name="weight" value="0.13"/>
+			<bsdf type="diffuse">
+				<color name="albedo" value="0.54,0.69,1.00"/>
+			</bsdf>
+			<bsdf type="roughconductor">
+				<color name="eta" value="2, 2, 2"/>
+				<color name="k" value="0, 0, 0"/>
+				<float name="alpha" value="0.05"/>
+			</bsdf>
+		</bsdf>-->
+		<bsdf type="phong">
+			<color name="diffuse" value="0.07 0.09 0.13"/>
+			<color name="specular" value="0.5 0.5 0.5"/>
+			<float name="exponent" value="800"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/plate4.obj"/>
+		<!--<bsdf type="mixture">
+			<float name="weight" value="0.13"/>
+			<bsdf type="diffuse">
+				<color name="albedo" value="0.54,0.69,1.00"/>
+			</bsdf>
+			<bsdf type="roughconductor">
+				<color name="eta" value="2, 2, 2"/>
+				<color name="k" value="0, 0, 0"/>
+				<float name="alpha" value="0.1"/>
+			</bsdf>
+		</bsdf>-->
+		<bsdf type="phong">
+			<color name="diffuse" value="0.07 0.09 0.13"/>
+			<color name="specular" value="0.5 0.5 0.5"/>
+			<float name="exponent" value="200"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/floor.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.4 0.4 0.4"/>
+		</bsdf>
+	</mesh>
+</scene>

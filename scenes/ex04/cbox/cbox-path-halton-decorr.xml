@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Manually converted from Mitsuba XML, converted from MDL -->
+<scene>
+	<integrator type="simplepath">
+		<integer name="maxBounces" value="10"/>
+		<integer name="rrMinBounces" value="3"/>
+	</integrator>
+
+	<!-- need the blockwise rendermanager for decorrelated halton sampling -->
+	<rendermanager type="blockwise"/>
+	<sampler type="halton_decorr">
+		<integer name="sampleCount" value="128"/>
+	</sampler>
+
+	<camera type="perspective">
+		<transform name="toWorld">
+			<lookat origin="278, 273, -750" target="278, 273, -749" up="0, 1, 0"/>
+		</transform>
+		<float name="fov" value="39.3077"/>
+		<integer name="width" value="512"/>
+		<integer name="height" value="512"/>
+	</camera>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_emitter.obj"/>
+		<transform name="toWorld">
+			<translate value="0, -0.5, 0"/>
+		</transform>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.78, 0.78, 0.78"/>
+		</bsdf>
+		<emitter type="area">
+			<color name="radiance" value="15, 15, 15"/>
+		</emitter>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_floor.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.75, 0.75"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_ceiling.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.75, 0.75"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_backwall.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.75, 0.75"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_rightwall.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.117, 0.373, 0.100"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_leftwall.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.61, 0.62, 0.06"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_smallbox.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.75, 0.75"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_largebox.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.75, 0.75"/>
+		</bsdf>
+	</mesh>
+</scene>

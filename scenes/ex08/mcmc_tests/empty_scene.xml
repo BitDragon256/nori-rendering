@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scene>
+	<rendermanager type="mlt">
+		<float name="newChain" value="0.1"/>
+		<!-- use only a single chain @ 512x512 x 1 spp -->
+		<integer name="chainlength" value="262144"/>
+	</rendermanager>
+	<integrator type="simplepath">
+		<integer name="maxBounces" value="10"/>
+		<integer name="rrMinBounces" value="3"/>
+	</integrator>
+
+	<sampler type="independent">
+		<integer name="sampleCount" value="1"/>
+	</sampler>
+
+	<camera type="perspective">
+		<integer name="width" value="512"/>
+		<integer name="height" value="512"/>
+	</camera>
+
+	<!-- there aren't any contents in this scene
+	it is up to you to produce an image -->
+</scene>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scene>
+	<rendermanager type="mlt"/>
+	<integrator type="mipath"/>
+
+	<sampler type="independent">
+		<integer name="sampleCount" value="128"/>
+	</sampler>
+
+	<camera type="perspective">
+		<float name="fov" value="30"/>
+		<transform name="toWorld">
+
+			<lookat target="-2, -2, -2" origin="16, 9, 16" up="0, 1, 0"/>
+		</transform>
+
+		<integer name="height" value="288"/>
+		<integer name="width" value="512"/>
+	</camera>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/sky.obj"/>
+
+		<bsdf type="diffuse">
+			<!-- don't bother with any reflections -->
+			<color name="albedo" value="0.0, 0.0, 0.0"/>
+		</bsdf>
+
+		<transform name="toWorld">
+			<scale value="100.0, 100.0, 100.0"/>
+		</transform>
+
+		<emitter type="area">
+			<color name="radiance" value="0.127, 0.216, 0.399"/>
+		</emitter>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/sphere.obj"/>
+
+		<bsdf type="diffuse">
+			<!-- don't bother with any reflections -->
+			<color name="albedo" value="0.0, 0.0, 0.0"/>
+		</bsdf>
+
+		<transform name="toWorld">
+			<scale value="20.0, 20.0, 20.0"/>
+			<translate value="-30, 1000, 120"/>
+		</transform>
+
+		<emitter type="area">
+			<color name="radiance" value="4020.0, 3174.0, 2422.0"/>
+		</emitter>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/pool.obj"/>
+
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.031373, 0.478431, 0.760784"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/frame.obj"/>
+
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.3, 0.3, 0.3"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/ground.obj"/>
+
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.5, 0.5, 0.5"/>
+		</bsdf>
+	</mesh>
+
+
+	<mesh type="obj">
+		<!--<transform name="toWorld">
+			<scale value="1, 0.25, 1"/>
+			<translate value="0, 0.1, 0"/>
+		</transform>-->
+		<string name="filename" value="meshes/waves.obj"/>
+
+		<bsdf type="dielectric">
+			<float name="intIOR" value="1.54"/>
+			<float name="extIOR" value="1"/>
+		</bsdf>
+	</mesh>
+</scene>

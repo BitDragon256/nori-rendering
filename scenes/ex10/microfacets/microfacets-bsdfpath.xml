@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Handcrafted -->
+<scene>
+	<integrator type="bsdfpath">
+		<integer name="maxBounces" value="10"/>
+		<integer name="rrMinBounces" value="3"/>
+	</integrator>
+
+	<sampler type="independent">
+		<integer name="sampleCount" value="128"/>
+	</sampler>
+
+	<camera type="perspective">
+		<transform name="toWorld">
+			<lookat origin="-1.2, 3.5, -4.5" target="0, 0.2, 0" up="0, 1, 0"/>
+			<scale value="-1, 1, 1"/>
+		</transform>
+		<float name="fov" value="50"/>
+		<integer name="width" value="512"/>
+		<integer name="height" value="288"/>
+	</camera>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/ground.obj"/>
+		<bsdf type="diffuse">
+			<texture type="checkerboard">
+				<color name="color0" value="0.01, 0.01, 0.01"/>
+				<color name="color1" value="0.9, 0.9, 0.9"/>
+				<float name="uvscale" value="32"/>
+			</texture>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/emitter.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0, 0, 0"/>
+		</bsdf>
+		<emitter type="area">
+			<color name="radiance" value="10, 10, 10"/>
+		</emitter>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/sphere.obj"/>
+		<transform name="toWorld">
+			<translate value="-1.6, 0, 1.1"/>
+		</transform>
+		<!-- silver -->
+		<bsdf type="roughconductor">
+			<color name="eta" value="0.15522, 0.116692, 0.138342"/>
+			<color name="k" value="4.827, 3.12139, 2.14636"/>
+			<float name="alpha" value="1.0"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/sphere.obj"/>
+		<transform name="toWorld">
+			<translate value="-0.5, 0, 1.1"/>
+		</transform>
+		<!-- silver -->
+		<bsdf type="roughconductor">
+			<color name="eta" value="0.15522, 0.116692, 0.138342"/>
+			<color name="k" value="4.827, 3.12139, 2.14636"/>
+			<float name="alpha" value="0.7"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/sphere.obj"/>
+		<transform name="toWorld">
+			<translate value="0.6, 0, 1.1"/>
+		</transform>
+		<!-- silver -->
+		<bsdf type="roughconductor">
+			<color name="eta" value="0.15522, 0.116692, 0.138342"/>
+			<color name="k" value="4.827, 3.12139, 2.14636"/>
+			<float name="alpha" value="0.5"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/sphere.obj"/>
+		<transform name="toWorld">
+			<translate value="1.7, 0, 1.1"/>
+		</transform>
+		<!-- silver -->
+		<bsdf type="roughconductor">
+			<color name="eta" value="0.15522, 0.116692, 0.138342"/>
+			<color name="k" value="4.827, 3.12139, 2.14636"/>
+			<float name="alpha" value="0.3"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/sphere.obj"/>
+		<transform name="toWorld">
+			<translate value="-1.6, 0, 0"/>
+		</transform>
+		<!-- silver -->
+		<bsdf type="roughconductor">
+			<color name="eta" value="0.15522, 0.116692, 0.138342"/>
+			<color name="k" value="4.827, 3.12139, 2.14636"/>
+			<float name="alpha" value="0.2"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/sphere.obj"/>
+		<transform name="toWorld">
+			<translate value="-0.5, 0, 0"/>
+		</transform>
+		<!-- silver -->
+		<bsdf type="roughconductor">
+			<color name="eta" value="0.15522, 0.116692, 0.138342"/>
+			<color name="k" value="4.827, 3.12139, 2.14636"/>
+			<float name="alpha" value="0.15"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/sphere.obj"/>
+		<transform name="toWorld">
+			<translate value="0.6, 0, 0"/>
+		</transform>
+		<!-- silver -->
+		<bsdf type="roughconductor">
+			<color name="eta" value="0.15522, 0.116692, 0.138342"/>
+			<color name="k" value="4.827, 3.12139, 2.14636"/>
+			<float name="alpha" value="0.1"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/sphere.obj"/>
+		<transform name="toWorld">
+			<translate value="1.7, 0, 0"/>
+		</transform>
+		<!-- silver -->
+		<bsdf type="roughconductor">
+			<color name="eta" value="0.15522, 0.116692, 0.138342"/>
+			<color name="k" value="4.827, 3.12139, 2.14636"/>
+			<float name="alpha" value="0.08"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/sphere.obj"/>
+		<transform name="toWorld">
+			<translate value="-1.6, 0, -1.1"/>
+		</transform>
+		<!-- silver -->
+		<bsdf type="roughconductor">
+			<color name="eta" value="0.15522, 0.116692, 0.138342"/>
+			<color name="k" value="4.827, 3.12139, 2.14636"/>
+			<float name="alpha" value="0.05"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/sphere.obj"/>
+		<transform name="toWorld">
+			<translate value="-0.5, 0, -1.1"/>
+		</transform>
+		<!-- silver -->
+		<bsdf type="roughconductor">
+			<color name="eta" value="0.15522, 0.116692, 0.138342"/>
+			<color name="k" value="4.827, 3.12139, 2.14636"/>
+			<float name="alpha" value="0.03"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/sphere.obj"/>
+		<transform name="toWorld">
+			<translate value="0.6, 0, -1.1"/>
+		</transform>
+		<!-- silver -->
+		<bsdf type="roughconductor">
+			<color name="eta" value="0.15522, 0.116692, 0.138342"/>
+			<color name="k" value="4.827, 3.12139, 2.14636"/>
+			<float name="alpha" value="0.01"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/sphere.obj"/>
+		<transform name="toWorld">
+			<translate value="1.7, 0, -1.1"/>
+		</transform>
+		<!-- silver -->
+		<bsdf type="conductor">
+			<color name="eta" value="0.15522, 0.116692, 0.138342"/>
+			<color name="k" value="4.827, 3.12139, 2.14636"/>
+		</bsdf>
+	</mesh>
+</scene>
