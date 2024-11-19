@@ -403,24 +403,29 @@ bool BVH::rayIntersect(const Ray3f &_ray, Intersection &its, bool shadowRay) con
     bool foundIntersection = false;
     its.prim_idx = 0;
 
-    for (const auto mesh : m_meshes)
+    const bool useBVH = true;
+
+    if (!useBVH)
     {
-        for (uint32_t triangleIndex = 0; triangleIndex < mesh->getTriangleCount(); ++triangleIndex)
+        for (const auto mesh : m_meshes)
         {
-            float u, v, t;
-            if (mesh->rayIntersect(triangleIndex, ray, u, v, t)) {
-                if (shadowRay)
-                    return true;
-                foundIntersection = true;
-                ray.maxt = its.t = t;
-                its.uv = Point2f(u, v);
-                its.mesh = mesh;
-                its.prim_idx = triangleIndex;
+            for (uint32_t triangleIndex = 0; triangleIndex < mesh->getTriangleCount(); ++triangleIndex)
+            {
+                float u, v, t;
+                if (mesh->rayIntersect(triangleIndex, ray, u, v, t)) {
+                    if (shadowRay)
+                        return true;
+                    foundIntersection = true;
+                    ray.maxt = its.t = t;
+                    its.uv = Point2f(u, v);
+                    its.mesh = mesh;
+                    its.prim_idx = triangleIndex;
+                }
             }
         }
     }
 
-    while (false) {
+    while (useBVH) {
         const BVHNode &node = m_nodes[node_idx];
 
         if (!node.bbox.rayIntersect(ray)) {

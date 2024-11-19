@@ -110,10 +110,16 @@ int main(int argc, char **argv) {
     std::string sceneName = "";
     std::string exrName = "";
 
+    std::string sceneFilePath;
+
+    // sceneFilePath = R"(X:\Dev\Studium\Rendering\nori-rendering\scenes\ex05\dragon\dragon-bsdfpath-60-60.xml)";
+    // sceneFilePath = R"(X:\Dev\Studium\Rendering\nori-rendering\scenes\ex05\ingots\ingots-dielectrics-bsdfpath.xml)";
+    sceneFilePath = R"(X:\Dev\Studium\Rendering\nori-rendering\scenes\ex05\ingots\ingots-bsdfpath.xml)";
+
     // std::string sceneFilePath = R"(Z:\PC\FortKnoxTheSecond\Studium\PI\Rendering\exercices\nori\scenes\ex03\cbox\cbox-direct.xml)";
 
     // cornell box
-    std::string sceneFilePath = R"(Z:\PC\FortKnoxTheSecond\Studium\PI\Rendering\exercices\nori\scenes\ex03\cbox\cbox-path.xml)";
+    // std::string sceneFilePath = R"(X:\Dev\Studium\Rendering\nori-rendering\scenes\ex03\cbox\cbox-path.xml)";
 
     // modified cornell box
     // std::string sceneFilePath = R"(Z:\PC\FortKnoxTheSecond\Studium\PI\Rendering\exercices\nori\scenes\ex03\cbox\cbox-path2.xml)";
@@ -121,8 +127,8 @@ int main(int argc, char **argv) {
     // sibenik
     // std::string sceneFilePath = R"(Z:\PC\FortKnoxTheSecond\Studium\PI\Rendering\exercices\nori\scenes\ex03\sibenik\sibenik-path.xml)";
 
-    //std::cout << "Enter File: ";
-    //std::cin >> sceneFilePath;
+    // std::cout << "Enter File: ";
+    // std::cin >> sceneFilePath;
 
     sceneFilePath.erase(std::remove(sceneFilePath.begin(), sceneFilePath.end(), '\"'), sceneFilePath.end());
 

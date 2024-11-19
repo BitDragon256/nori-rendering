@@ -36,7 +36,6 @@ float Warp::squareToUniformTrianglePdf(const Point2f &p) {
 Point2f Warp::squareToUniformDisk(const Point2f &sample) {
     // TODO: Exercise 5.1 c): Sample points uniformly on the unit disk with center (0,0) and radius 1
 
-    // the calculation of sin and cos can be skipped with this
     const float theta = sample.x() * M_PI * 2.f;
     const float r = std::sqrtf(sample.y());
 
