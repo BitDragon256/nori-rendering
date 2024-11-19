@@ -29,7 +29,38 @@ public:
         Vector3f dir;
     };
 
+    Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &cameraRay) const override {
+        // TODO: Exercise 3.3: Implement the simple path tracer
+        auto throughput = Color3f(1.0f);
+        auto radiance = Color3f(0);
+        Ray3f currentRay = cameraRay;
 
+        for (int bounce = 0; bounce < m_maxBounces; ++bounce) {
+            Intersection its;
+            if (scene->rayIntersect(currentRay, its)) {
+                const Emitter *emitter = its.mesh->getEmitter();
+                Vector3f wi = its.toLocal(-currentRay.d).normalized();
+                Vector3f wo = Warp::squareToUniformHemisphere(sampler->next2D());
+                float pdf = Warp::squareToUniformHemispherePdf(wo);
+
+                if (emitter) {
+                    radiance += throughput * emitter->eval(wi);
+                }
+
+                BSDFQueryRecord bsdfRec(wi, wo, ESolidAngle, its.uv);
+                Color3f bsdfColor = its.mesh->getBSDF()->eval(bsdfRec);
+                float cosTheta = Frame::cosTheta(wo);
+                throughput *= (bsdfColor * cosTheta) / pdf;
+                currentRay = Ray3f(its.p, its.toWorld(wo));
+            } else {
+                break;
+            }
+        }
+
+        return radiance;
+    }
+
+    /* "verry verry complex"
     Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &cameraRay) const override {
         Color3f accumulatedRadiance{ 1.f };
 
@@ -84,6 +115,7 @@ public:
 
         return light;
     }
+    */
 
     std::string toString() const override {
         std::ostringstream oss;

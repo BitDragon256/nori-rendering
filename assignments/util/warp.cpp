@@ -35,12 +35,20 @@ float Warp::squareToUniformTrianglePdf(const Point2f &p) {
 
 Point2f Warp::squareToUniformDisk(const Point2f &sample) {
     // TODO: Exercise 5.1 c): Sample points uniformly on the unit disk with center (0,0) and radius 1
-    throw NoriException("Warp::squareToUniformDisk() is not yet implemented!");
+
+    // the calculation of sin and cos can be skipped with this
+    const float theta = sample.x() * M_PI * 2.f;
+    const float r = std::sqrtf(sample.y());
+
+    return { r * std::cos(theta), r * std::sin(theta) };
 }
 
 float Warp::squareToUniformDiskPdf(const Point2f &p) {
     // TODO: Exercise 5.1 c): Return the PDF for points sampled on the unit disk (or outside of it)
-    throw NoriException("Warp::squareToUniformDiskPdf() is not yet implemented!");
+
+    if (p.norm() <= 1.f)
+        return INV_PI;
+    return 0.f;
 }
 
 Vector3f Warp::squareToUniformSphere(const Point2f &sample) {
@@ -76,12 +84,13 @@ float Warp::squareToUniformHemispherePdf(const Vector3f &v) {
 
 Vector3f Warp::squareToCosineHemisphere(const Point2f &sample) {
     // TODO: Exercise 5.1 d): Sample directions on the cosine weighted hemisphere
-    throw NoriException("Warp::squareToCosineHemisphere() is not yet implemented!");
+    const auto disk = squareToUniformDisk(sample);
+    return { disk.x(), disk.y(), std::sqrtf(1.f - disk.norm() * disk.norm()) };
 }
 
 float Warp::squareToCosineHemispherePdf(const Vector3f &v) {
     // TODO: Exercise 5.1 d): Return the PDF for samples on the cosine weighted hemisphere (or outside of it)
-    throw NoriException("Warp::squareToCosineHemispherePdf() is not yet implemented!");
+    return std::max(0.f, v.z()) * INV_PI;
 }
 
 Vector3f Warp::squareToBeckmann(const Point2f &sample, float alpha) {
