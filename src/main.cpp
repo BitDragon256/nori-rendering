@@ -102,10 +102,10 @@ static void render(Scene *scene, const std::string &filename) {
 }
 
 int main(int argc, char **argv) {
-    if (argc < 2) {
-        cerr << "Syntax: " << argv[0] << " <scene.xml> [--no-gui] [--threads N]" <<  endl;
-        return -1;
-    }
+    // if (argc < 3) {
+    //     cerr << "Syntax: " << argv[0] << " <scene.xml> [--no-gui] [--threads N]" <<  endl;
+    //     return -1;
+    // }
 
     std::string sceneName = "";
     std::string exrName = "";
@@ -114,7 +114,8 @@ int main(int argc, char **argv) {
 
     // sceneFilePath = R"(X:\Dev\Studium\Rendering\nori-rendering\scenes\ex05\dragon\dragon-bsdfpath-60-60.xml)";
     // sceneFilePath = R"(X:\Dev\Studium\Rendering\nori-rendering\scenes\ex05\ingots\ingots-dielectrics-bsdfpath.xml)";
-    sceneFilePath = R"(X:\Dev\Studium\Rendering\nori-rendering\scenes\ex05\ingots\ingots-bsdfpath.xml)";
+    // sceneFilePath = R"(X:\Dev\Studium\Rendering\nori-rendering\scenes\ex05\ingots\ingots-bsdfpath.xml)";
+    sceneFilePath = "/home/bitdragon/dev/Rendering/nori-rendering/scenes/ex05/ingots/ingots-bsdfpath.xml";
 
     // std::string sceneFilePath = R"(Z:\PC\FortKnoxTheSecond\Studium\PI\Rendering\exercices\nori\scenes\ex03\cbox\cbox-direct.xml)";
 
@@ -130,7 +131,7 @@ int main(int argc, char **argv) {
     // std::cout << "Enter File: ";
     // std::cin >> sceneFilePath;
 
-    sceneFilePath.erase(std::remove(sceneFilePath.begin(), sceneFilePath.end(), '\"'), sceneFilePath.end());
+    // sceneFilePath.erase(std::remove(sceneFilePath.begin(), sceneFilePath.end(), '\"'), sceneFilePath.end());
 
     for (int i = 1; i < argc; ++i) {
         std::string token(argv[i]);

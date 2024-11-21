@@ -21,8 +21,7 @@ public:
         m_etaInt = propList.getFloat("intIOR", 1.5f);
     }
 
-    Color3f eval(const BSDFQueryRecord &bRec) const override
-    {
+    Color3f eval(const BSDFQueryRecord &bRec) const override {
         const auto wr = reflect(bRec.wo);
 
         // with the dirac-delta function only either the one or the other side of the equation can be returned
@@ -35,36 +34,95 @@ public:
             etaT = m_etaExt;
 
             return {
-                fresnelDielectric(Frame::cosTheta(bRec.wi), m_etaExt, m_etaInt) / Frame::cosTheta(bRec.wi)
+                fresnelDielectric(Frame::cosTheta(bRec.wi), m_etaExt, m_etaInt) / std::abs(Frame::cosTheta(bRec.wi))
             };
         }
-        else if (bRec.wo == refract(bRec.wi, m_etaExt / m_etaInt))
+        else if (bRec.wo == refract(bRec.wi, m_etaExt, m_etaInt))
         {
             // refract
-            etaO = m_etaExt;
-            etaT = m_etaInt;
+            if (bRec.wi.z() >= 0.f) {
+                etaO = m_etaExt;
+                etaT = m_etaInt;
+            } else {
+                etaO = m_etaInt;
+                etaT = m_etaExt;
+            }
 
             return {
-                std::pow(etaO / etaT, 2.f) * (1.f - fresnelDielectric(Frame::cosTheta(bRec.wi), m_etaExt, m_etaInt)) / Frame::cosTheta(bRec.wi)
+                std::pow(etaO / etaT, 2.f) * (1.f - fresnelDielectric(Frame::cosTheta(bRec.wi), etaO, etaT)) / std::abs(Frame::cosTheta(bRec.wi)) * M_PI
             };
         }
         return { 0.f };
     }
 
     float pdf(const BSDFQueryRecord &bRec) const override {
-        if (bRec.measure != EDiscrete || bRec.wi != reflect(bRec.wo))
-            return 0.0f;
+        if (bRec.measure != EDiscrete || (bRec.wi != reflect(bRec.wo) && bRec.wi != refract(bRec.wo, m_etaExt, m_etaInt)))
+            return 0.f;
 
         return 1.f;
     }
 
     Color3f sample(BSDFQueryRecord &bRec, const Point2f &sample) const override {
+
+        /*
         bRec.measure = EDiscrete;
 
-        const auto wr = bRec.wi;
-        const float f = fresnelDielectric(Frame::cosTheta(wr), m_etaExt, m_etaInt);
+        float cosThetaI = Frame::cosTheta(bRec.wi);
+        const bool entering = cosThetaI > 0;
 
-        if (sample.x() >= f)
+        // Determine IORs depending on whether the ray is entering or exiting
+        const auto etaI = entering ? m_etaExt : m_etaInt;
+        const auto etaT = entering ? m_etaInt : m_etaExt;
+
+
+        const auto reflectionDirection = Vector3f(-bRec.wi.x(), -bRec.wi.y(), bRec.wi.z()); ;
+
+        const auto cosTheta = Frame::cosTheta(bRec.wi); // cos(theta_i)
+        const auto reflectionProbability = fresnelDielectric(cosTheta, m_etaExt, m_etaInt);
+        if(sample.x() < reflectionProbability)
+        {
+            // reflection case
+            bRec.wo = reflectionDirection;
+            return {0.0f};
+        }
+
+
+        // refraction case
+        const auto eta = etaI / etaT;
+        const auto sinThetaI2 = std::max(0.0f, 1.0f - cosThetaI * cosThetaI);
+        const auto sinThetaT2 = eta * eta * sinThetaI2;
+
+        // Check for total internal reflection
+        if (sinThetaT2 >= 1.0f)
+            return { 0.0f };
+
+        auto cosThetaT = std::sqrt(1.0f - sinThetaT2);
+        if (!entering)
+            cosThetaT = -cosThetaT;
+
+        // Calculate refracted direction
+        bRec.wo = eta * -bRec.wi + (eta * cosThetaI - cosThetaT) * Vector3f(0, 0, 1.f);
+
+        // Scale by the transmission factor (1 - Fresnel)
+        const auto cosThetaO = Frame::cosTheta(bRec.wo);
+        const auto transmission = (1 - reflectionProbability) * (etaT * etaT) / (etaI * etaI);
+
+        return { transmission / std::abs(cosThetaO) };
+        */
+
+        ///*
+
+        bRec.measure = EDiscrete;
+
+        auto n1 = m_etaExt;
+        auto n2 = m_etaInt;
+        if (bRec.wi.z() < 0)
+            std::swap(n1, n2);
+
+        const auto wr = bRec.wi;
+        const float f = fresnelDielectric(Frame::cosTheta(wr), n1, n2);
+
+        if (sample.x() < f)
         {
             // reflect
             bRec.wo = reflect(bRec.wi);
@@ -72,10 +130,13 @@ public:
         else
         {
             // refract
-            bRec.wo = refract(bRec.wi, m_etaExt / m_etaInt);
+            bRec.wo = refract(bRec.wi, n1, n2);
+            // bRec.wo = -bRec.wi;
         }
 
         return eval(bRec);
+
+        //*/
     }
 
     void addChild(NoriObject *child)  override {
@@ -131,9 +192,16 @@ private:
         return { -v.x(), -v.y(), v.z() };
     }
 
-    static Vector3f refract(Vector3f v, float refr)
+    static Vector3f refract(Vector3f v, float n1, float n2)
     {
-        return refr * v + Vector3f{ 0.f, 0.f, refr * Frame::cosTheta(v) - std::sqrt(1.f - Frame::sinTheta2(v)) };
+        v = -v;
+        const auto proj = Vector3f(v.x(), v.y(), 0.f);
+
+        std::swap(n1, n2);
+
+        // return (v - proj * n1 / n2).normalized();
+
+        return n1 / n2 * proj + Vector3f(0.f, 0.f, std::sqrt(1.f - (n1 / n2 * proj).squaredNorm()));
     }
 };
 

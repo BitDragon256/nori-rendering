@@ -48,14 +48,14 @@ public:
                     probabilityToDie = 1.f;
 
                 if (emitter) {
-                    radiance += throughput * emitter->eval(wi) / probabilityToDie;
+                    radiance += throughput * emitter->eval(wi);
                 }
 
                 if (bounce >= m_rrMinBounces)
                     if (sampler->next1D() > probabilityToDie)
                         break;
 
-                throughput *= bsdfColor;
+                throughput *= bsdfColor / probabilityToDie;
                 currentRay = Ray3f(its.p, its.toWorld(bsdfRec.wo));
             } else {
                 break;
