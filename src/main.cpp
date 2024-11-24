@@ -115,7 +115,8 @@ int main(int argc, char **argv) {
     // sceneFilePath = R"(X:\Dev\Studium\Rendering\nori-rendering\scenes\ex05\dragon\dragon-bsdfpath-60-60.xml)";
     // sceneFilePath = R"(X:\Dev\Studium\Rendering\nori-rendering\scenes\ex05\ingots\ingots-dielectrics-bsdfpath.xml)";
     // sceneFilePath = R"(X:\Dev\Studium\Rendering\nori-rendering\scenes\ex05\ingots\ingots-bsdfpath.xml)";
-    sceneFilePath = "/home/bitdragon/dev/Rendering/nori-rendering/scenes/ex05/ingots/ingots-bsdfpath.xml";
+    // sceneFilePath = "/home/bitdragon/dev/Rendering/nori-rendering/scenes/ex05/ingots/ingots-bsdfpath.xml";
+    sceneFilePath = "/home/bitdragon/dev/Rendering/nori-rendering/scenes/ex06/veach_mi/veach_mi-midirect.xml";
 
     // std::string sceneFilePath = R"(Z:\PC\FortKnoxTheSecond\Studium\PI\Rendering\exercices\nori\scenes\ex03\cbox\cbox-direct.xml)";
 
