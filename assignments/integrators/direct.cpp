@@ -60,7 +60,7 @@ public:
                 if (scene->rayIntersect({ emitterSampleInfo.p, -emitterSampleInfo.ws_wi, Epsilon, emitterSampleInfo.distance * (1.f - Epsilon) }))
                     return { 0.f };
 
-                const BSDFQueryRecord bsdfQueryRecord{ emitterSampleInfo.wi, localCRD, EMeasure::ESolidAngle, hitInfo.uv };
+                const BSDFQueryRecord bsdfQueryRecord{ hitInfo.toLocal(-emitterSampleInfo.ws_wi), localCRD, EMeasure::ESolidAngle, hitInfo.uv };
                 const auto bsdfEval = bsdf->eval(bsdfQueryRecord);
                 return bsdfEval * emitterSample * std::abs(Frame::cosTheta(hitInfo.toLocal(emitterSampleInfo.ws_wi)));
             }
