@@ -6,8 +6,8 @@ project(nori
     CXX C
 )
 
-set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra")
+# set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra")
+# set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra")
 
 add_subdirectory(ext ext_build)
 
@@ -155,6 +155,6 @@ if (CMAKE_GENERATOR STREQUAL "Ninja")
 endif()
 
 target_compile_features(warptest PRIVATE cxx_std_17)
-target_compile_features(nori PRIVATE cxx_std_20)
+target_compile_features(nori PRIVATE cxx_std_23)
 
 # vim: set et ts=2 sw=2 ft=cmake nospell:

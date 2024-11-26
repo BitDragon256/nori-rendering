@@ -15,15 +15,6 @@
 
 NORI_NAMESPACE_BEGIN
 
-Color3f operator*(Color3f a, Color3f b)
-{
-    return { a.x() * b.x(), a.y() * b.y(), a.z() * b.z() };
-}
-Color3f operator*(Color3f a, float v)
-{
-    return { a.x() * v, a.y() * v, a.z() * v };
-}
-
 /**
  * \brief DirectLightIntegrator
  */

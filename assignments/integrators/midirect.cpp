@@ -6,6 +6,8 @@
 
 #include <execution>
 #include <numeric>
+#include <ranges>
+#include <algorithm>
 
 #include <nori/integrator.h>
 #include <nori/sampler.h>
@@ -14,15 +16,6 @@
 #include <nori/bsdf.h>
 
 NORI_NAMESPACE_BEGIN
-
-inline Color3f operator*(Color3f a, Color3f b)
-{
-    return { a.x() * b.x(), a.y() * b.y(), a.z() * b.z() };
-}
-inline Color3f operator*(Color3f a, float v)
-{
-    return { a.x() * v, a.y() * v, a.z() * v };
-}
 
 /**
  * \brief MISDIntegrator
@@ -45,35 +38,82 @@ public:
             return {0.f};
 
         const auto bsdf = hitInfo.mesh->getBSDF();
-        const auto localCRD = hitInfo.toLocal(-cameraRay.d);
+        const auto wi = hitInfo.toLocal(-cameraRay.d).normalized();
 
         auto startColor = Color3f(0.f);
         if (hitInfo.mesh->isEmitter())
         {
-            startColor = hitInfo.mesh->getEmitter()->eval(localCRD);
+            startColor = hitInfo.mesh->getEmitter()->eval(wi);
         }
 
-        // calulate emitter influence
-        const auto& emitters = scene->getEmitters();
-        return std::transform_reduce(
-            emitters.cbegin(), emitters.cend(),
-            startColor,
-            std::plus<>(),
-            [scene, hitInfo, bsdf, sampler, localCRD](const std::unique_ptr<Emitter>& emitter) -> Color3f {
-                if (hitInfo.mesh->getEmitter() == emitter.get())
-                    return { 0.f };
+        auto accColor = Color3f(0.f);
+        for (size_t i = 0; i < 1; ++i)
+        {
+            auto misColor = Color3f(0.f);
 
+            // shoot ray against emitter
+            if (false)
+            {
                 EmitterQueryRecord emitterSampleInfo{ hitInfo.p };
-                const auto emitterSample = emitter->sampleDirect(emitterSampleInfo, sampler->next2D() );
+                auto emitterColor = scene->sampleEmitterDirect(emitterSampleInfo, sampler->next2D());
+                auto emitterPdf = 0.f;
 
-                if (scene->rayIntersect({ emitterSampleInfo.p, -emitterSampleInfo.ws_wi, Epsilon, emitterSampleInfo.distance * (1.f - Epsilon) }))
-                    return { 0.f };
+                if (!scene->rayIntersect({ emitterSampleInfo.p, -emitterSampleInfo.ws_wi, Epsilon, emitterSampleInfo.distance * (1.f - Epsilon) }))
+                {
+                    emitterPdf = scene->pdfEmitterDirect(emitterSampleInfo);
+                    BSDFQueryRecord bsdfQueryRecord(
+                        emitterSampleInfo.wi,
+                        -hitInfo.toLocal(cameraRay.d),
+                        ESolidAngle
+                    ); // UV is not needed here
 
-                const BSDFQueryRecord bsdfQueryRecord{ emitterSampleInfo.wi, localCRD, EMeasure::ESolidAngle, hitInfo.uv };
-                const auto bsdfEval = bsdf->eval(bsdfQueryRecord);
-                return bsdfEval * emitterSample * std::abs(Frame::cosTheta(hitInfo.toLocal(emitterSampleInfo.ws_wi)));
+                    auto bsdfColor = bsdf->eval(bsdfQueryRecord) * std::max(std::abs(Frame::cosTheta(bsdfQueryRecord.wo)), 0.0001f);
+                    auto bsdfPdf= bsdf->pdf(bsdfQueryRecord);
+
+                    // std::cout << Frame::cosTheta(bsdfQueryRecord.wo) << " " << emitterPdf << " " << bsdfPdf << std::endl;
+
+                    if (emitterPdf != 0.f && Frame::cosTheta(emitterSampleInfo.wi) > 0)
+                        misColor += emitterColor * bsdfColor * weighting_heuristic(emitterPdf, { emitterPdf, bsdfPdf }) / emitterPdf;
+                    if (bsdfPdf != 0.f)
+                        misColor += emitterColor * bsdfColor * weighting_heuristic(bsdfPdf, { emitterPdf, bsdfPdf }) / bsdfPdf;
+                }
             }
-        );
+
+            // shoot ray with BSDF
+            if (true)
+            {
+                BSDFQueryRecord bsdfQueryRecord(wi, hitInfo.uv);
+                auto bsdfColor = bsdf->sample(bsdfQueryRecord, sampler->next2D());// * Frame::cosTheta(wi);
+
+                if (Intersection emitterHitInfo; scene->rayIntersect({ hitInfo.p, hitInfo.toWorld(bsdfQueryRecord.wo) }, emitterHitInfo) && emitterHitInfo.mesh->isEmitter())
+                {
+                    auto bsdfPdf = bsdf->pdf(bsdfQueryRecord);
+
+                    EmitterQueryRecord emitterQueryRecord(
+                        hitInfo.p,
+                        emitterHitInfo.p,
+                        emitterHitInfo.t,
+                        hitInfo.toWorld(wi),
+                        bsdfQueryRecord.wo,
+                        bsdfQueryRecord.measure,
+                        emitterHitInfo.mesh->getEmitter()->idx
+                    );
+                    auto emitterColor = emitterHitInfo.mesh->getEmitter()->eval(wi);
+                    auto emitterPdf = scene->pdfEmitterDirect(emitterQueryRecord);
+
+                    // std::cout << emitterPdf << std::endl;
+
+                    if (emitterPdf != 0.f)
+                        misColor += bsdfColor * emitterColor * weighting_heuristic(emitterPdf, { emitterPdf, bsdfPdf }) / emitterPdf;
+                    if (bsdfPdf != 0.f)
+                        misColor += bsdfColor * emitterColor * weighting_heuristic(bsdfPdf, { emitterPdf, bsdfPdf }) / bsdfPdf;
+                }
+            }
+
+            accColor += misColor;// * 0.5f;
+        }
+
+        return accColor + startColor;
     }
 
     std::string toString() const override {
@@ -81,6 +121,28 @@ public:
         oss << "MISDIntegrator[" << endl
             << "]";
         return oss.str();
+    }
+
+private:
+
+    using pdfvec = const std::vector<float>&;
+
+    static float weighting_heuristic(float pdf, pdfvec pdfs)
+    {
+        return balance_wh(pdf, pdfs);
+    }
+
+    static float uniform_wh(float pdf, pdfvec pdfs)
+    {
+        return static_cast<float>(pdf > 0) / std::transform_reduce(pdfs.cbegin(), pdfs.cend(), 0.f, std::plus<>(), [](float v){ return static_cast<float>(v > 0); });
+    }
+    static float balance_wh(float pdf, pdfvec pdfs)
+    {
+        return pdf / std::reduce(pdfs.cbegin(), pdfs.cend(), 0.f, std::plus<>());
+    }
+    static float power_wh(float pdf, pdfvec pdfs)
+    {
+        return pdf*pdf / std::transform_reduce(pdfs.cbegin(), pdfs.cend(), 0.f, std::plus<>(), [](float v){ return v*v; });
     }
 
 };
