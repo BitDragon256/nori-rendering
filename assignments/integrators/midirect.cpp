@@ -47,35 +47,34 @@ public:
         }
 
         auto accColor = Color3f(0.f);
-        for (size_t i = 0; i < 1; ++i)
+        constexpr auto sampleCount = 1;
+        for (size_t i = 0; i < sampleCount; ++i)
         {
             auto misColor = Color3f(0.f);
 
             // shoot ray against emitter
-            if (false)
+            if (true)
             {
                 EmitterQueryRecord emitterSampleInfo{ hitInfo.p };
                 auto emitterColor = scene->sampleEmitterDirect(emitterSampleInfo, sampler->next2D());
                 auto emitterPdf = 0.f;
 
-                if (!scene->rayIntersect({ emitterSampleInfo.p, -emitterSampleInfo.ws_wi, Epsilon, emitterSampleInfo.distance * (1.f - Epsilon) }))
+                if (!scene->rayIntersect({ hitInfo.p, -emitterSampleInfo.ws_wi, Epsilon, emitterSampleInfo.distance * (1.f - Epsilon) }))
                 {
                     emitterPdf = scene->pdfEmitterDirect(emitterSampleInfo);
+
+                    const auto wo = hitInfo.toLocal(-emitterSampleInfo.ws_wi);
                     BSDFQueryRecord bsdfQueryRecord(
-                        emitterSampleInfo.wi,
-                        -hitInfo.toLocal(cameraRay.d),
+                        wi,
+                        wo,
                         ESolidAngle
                     ); // UV is not needed here
 
-                    auto bsdfColor = bsdf->eval(bsdfQueryRecord) * std::max(std::abs(Frame::cosTheta(bsdfQueryRecord.wo)), 0.0001f);
+                    auto bsdfColor = bsdf->eval(bsdfQueryRecord);
                     auto bsdfPdf= bsdf->pdf(bsdfQueryRecord);
 
-                    // std::cout << Frame::cosTheta(bsdfQueryRecord.wo) << " " << emitterPdf << " " << bsdfPdf << std::endl;
-
-                    if (emitterPdf != 0.f && Frame::cosTheta(emitterSampleInfo.wi) > 0)
-                        misColor += emitterColor * bsdfColor * weighting_heuristic(emitterPdf, { emitterPdf, bsdfPdf }) / emitterPdf;
-                    if (bsdfPdf != 0.f)
-                        misColor += emitterColor * bsdfColor * weighting_heuristic(bsdfPdf, { emitterPdf, bsdfPdf }) / bsdfPdf;
+                    auto misWeight = weighting_heuristic(emitterPdf, { bsdfPdf, emitterPdf });//emitterPdf / (bsdfPdf + emitterPdf);
+                    misColor += misWeight * emitterColor * bsdfColor * std::abs(Frame::cosTheta(wo));
                 }
             }
 
@@ -94,26 +93,25 @@ public:
                         emitterHitInfo.p,
                         emitterHitInfo.t,
                         hitInfo.toWorld(wi),
-                        bsdfQueryRecord.wo,
+                        wi,
+                        //bsdfQueryRecord.wo,
                         bsdfQueryRecord.measure,
                         emitterHitInfo.mesh->getEmitter()->idx
                     );
                     auto emitterColor = emitterHitInfo.mesh->getEmitter()->eval(wi);
                     auto emitterPdf = scene->pdfEmitterDirect(emitterQueryRecord);
 
-                    // std::cout << emitterPdf << std::endl;
+                    auto cosTheta = std::abs(Frame::cosTheta(wi));
 
-                    if (emitterPdf != 0.f)
-                        misColor += bsdfColor * emitterColor * weighting_heuristic(emitterPdf, { emitterPdf, bsdfPdf }) / emitterPdf;
-                    if (bsdfPdf != 0.f)
-                        misColor += bsdfColor * emitterColor * weighting_heuristic(bsdfPdf, { emitterPdf, bsdfPdf }) / bsdfPdf;
+                    auto misWeight = weighting_heuristic(bsdfPdf, { bsdfPdf, emitterPdf });//bsdfPdf / (bsdfPdf + emitterPdf);
+                    misColor += misWeight * emitterColor * bsdfColor;// * cosTheta;// / bsdfPdf;
                 }
             }
 
-            accColor += misColor;// * 0.5f;
+            accColor += misColor;
         }
 
-        return accColor + startColor;
+        return accColor / sampleCount + startColor;
     }
 
     std::string toString() const override {
@@ -129,7 +127,7 @@ private:
 
     static float weighting_heuristic(float pdf, pdfvec pdfs)
     {
-        return balance_wh(pdf, pdfs);
+        return power_wh(pdf, pdfs);
     }
 
     static float uniform_wh(float pdf, pdfvec pdfs)
