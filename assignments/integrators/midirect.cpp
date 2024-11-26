@@ -73,7 +73,7 @@ public:
                     auto bsdfColor = bsdf->eval(bsdfQueryRecord);
                     auto bsdfPdf= bsdf->pdf(bsdfQueryRecord);
 
-                    auto misWeight = weighting_heuristic(emitterPdf, { bsdfPdf, emitterPdf });//emitterPdf / (bsdfPdf + emitterPdf);
+                    auto misWeight = weighting_heuristic(emitterPdf, { bsdfPdf, emitterPdf });
                     misColor += misWeight * emitterColor * bsdfColor * std::abs(Frame::cosTheta(wo));
                 }
             }
@@ -82,7 +82,7 @@ public:
             if (true)
             {
                 BSDFQueryRecord bsdfQueryRecord(wi, hitInfo.uv);
-                auto bsdfColor = bsdf->sample(bsdfQueryRecord, sampler->next2D());// * Frame::cosTheta(wi);
+                auto bsdfColor = bsdf->sample(bsdfQueryRecord, sampler->next2D());
 
                 if (Intersection emitterHitInfo; scene->rayIntersect({ hitInfo.p, hitInfo.toWorld(bsdfQueryRecord.wo) }, emitterHitInfo) && emitterHitInfo.mesh->isEmitter())
                 {
@@ -94,7 +94,6 @@ public:
                         emitterHitInfo.t,
                         hitInfo.toWorld(wi),
                         wi,
-                        //bsdfQueryRecord.wo,
                         bsdfQueryRecord.measure,
                         emitterHitInfo.mesh->getEmitter()->idx
                     );
@@ -103,8 +102,8 @@ public:
 
                     auto cosTheta = std::abs(Frame::cosTheta(wi));
 
-                    auto misWeight = weighting_heuristic(bsdfPdf, { bsdfPdf, emitterPdf });//bsdfPdf / (bsdfPdf + emitterPdf);
-                    misColor += misWeight * emitterColor * bsdfColor;// * cosTheta;// / bsdfPdf;
+                    auto misWeight = weighting_heuristic(bsdfPdf, { bsdfPdf, emitterPdf });
+                    misColor += misWeight * emitterColor * bsdfColor;
                 }
             }
 
@@ -127,12 +126,15 @@ private:
 
     static float weighting_heuristic(float pdf, pdfvec pdfs)
     {
-        return power_wh(pdf, pdfs);
+        return uniform_wh(pdf, pdfs);
     }
 
     static float uniform_wh(float pdf, pdfvec pdfs)
     {
-        return static_cast<float>(pdf > 0) / std::transform_reduce(pdfs.cbegin(), pdfs.cend(), 0.f, std::plus<>(), [](float v){ return static_cast<float>(v > 0); });
+        const auto sum = std::transform_reduce(pdfs.cbegin(), pdfs.cend(), 0.f, std::plus<>(), [](float v){ return v > 0 ? 1.f : 0.f; });
+        if (!isnormal(sum))
+            return 0.f;
+        return (pdf > 0 ? 1.f : 0.f) / sum;
     }
     static float balance_wh(float pdf, pdfvec pdfs)
     {
