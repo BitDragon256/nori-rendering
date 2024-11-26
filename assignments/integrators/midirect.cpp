@@ -56,56 +56,70 @@ public:
             if (true)
             {
                 EmitterQueryRecord emitterSampleInfo{ hitInfo.p };
-                auto emitterColor = scene->sampleEmitterDirect(emitterSampleInfo, sampler->next2D());
-                auto emitterPdf = 0.f;
+                const auto emitterColor = scene->sampleEmitterDirect(emitterSampleInfo, sampler->next2D());
+                if (emitterColor.isZero())
+                    goto end_emitter_eval;
 
-                if (!scene->rayIntersect({ hitInfo.p, -emitterSampleInfo.ws_wi, Epsilon, emitterSampleInfo.distance * (1.f - Epsilon) }))
-                {
-                    emitterPdf = scene->pdfEmitterDirect(emitterSampleInfo);
+                const auto emitterPdf = scene->pdfEmitterDirect(emitterSampleInfo);
 
-                    const auto wo = hitInfo.toLocal(-emitterSampleInfo.ws_wi);
-                    BSDFQueryRecord bsdfQueryRecord(
-                        wi,
-                        wo,
-                        ESolidAngle
-                    ); // UV is not needed here
+                const auto isShadowed = scene->rayIntersect({ hitInfo.p, -emitterSampleInfo.ws_wi, Epsilon, emitterSampleInfo.distance * (1.f - Epsilon) });
 
-                    auto bsdfColor = bsdf->eval(bsdfQueryRecord);
-                    auto bsdfPdf= bsdf->pdf(bsdfQueryRecord);
+                if (isShadowed || emitterPdf <= 0.f)
+                    goto end_emitter_eval;
 
-                    auto misWeight = weighting_heuristic(emitterPdf, { bsdfPdf, emitterPdf });
-                    misColor += misWeight * emitterColor * bsdfColor * std::abs(Frame::cosTheta(wo));
-                }
+                const auto wo = hitInfo.toLocal(-emitterSampleInfo.ws_wi);
+                BSDFQueryRecord bsdfQueryRecord(
+                    wi,
+                    wo,
+                    ESolidAngle
+                ); // UV is not needed here
+
+                auto bsdfPdf= bsdf->pdf(bsdfQueryRecord);
+                auto bsdfColor = bsdf->eval(bsdfQueryRecord);
+
+                float misWeight;
+                if (emitterSampleInfo.measure == EDiscrete)
+                    misWeight = 1.f;
+                else
+                    misWeight = weighting_heuristic(emitterPdf, { bsdfPdf, emitterPdf });
+                misColor += misWeight * emitterColor * bsdfColor * std::abs(Frame::cosTheta(wo));
             }
+            end_emitter_eval:
 
             // shoot ray with BSDF
             if (true)
             {
                 BSDFQueryRecord bsdfQueryRecord(wi, hitInfo.uv);
-                auto bsdfColor = bsdf->sample(bsdfQueryRecord, sampler->next2D());
+                const auto bsdfColor = bsdf->sample(bsdfQueryRecord, sampler->next2D());
+                if (bsdfColor.isZero())
+                    goto end_bsdf_eval;
 
-                if (Intersection emitterHitInfo; scene->rayIntersect({ hitInfo.p, hitInfo.toWorld(bsdfQueryRecord.wo) }, emitterHitInfo) && emitterHitInfo.mesh->isEmitter())
-                {
-                    auto bsdfPdf = bsdf->pdf(bsdfQueryRecord);
+                const auto bsdfPdf = bsdf->pdf(bsdfQueryRecord);
 
-                    EmitterQueryRecord emitterQueryRecord(
-                        hitInfo.p,
-                        emitterHitInfo.p,
-                        emitterHitInfo.t,
-                        hitInfo.toWorld(wi),
-                        wi,
-                        bsdfQueryRecord.measure,
-                        emitterHitInfo.mesh->getEmitter()->idx
-                    );
-                    auto emitterColor = emitterHitInfo.mesh->getEmitter()->eval(wi);
-                    auto emitterPdf = scene->pdfEmitterDirect(emitterQueryRecord);
+                Intersection emitterHitInfo;
+                const auto intersected = scene->rayIntersect({ hitInfo.p, hitInfo.toWorld(bsdfQueryRecord.wo) }, emitterHitInfo);
 
-                    auto cosTheta = std::abs(Frame::cosTheta(wi));
+                if (bsdfPdf <= 0.f || !intersected || !emitterHitInfo.mesh-> isEmitter())
+                    goto end_bsdf_eval;
 
-                    auto misWeight = weighting_heuristic(bsdfPdf, { bsdfPdf, emitterPdf });
-                    misColor += misWeight * emitterColor * bsdfColor;
-                }
+                EmitterQueryRecord emitterQueryRecord(
+                    hitInfo.p,
+                    emitterHitInfo.p,
+                    emitterHitInfo.t,
+                    hitInfo.toWorld(wi),
+                    wi,
+                    bsdfQueryRecord.measure,
+                    emitterHitInfo.mesh->getEmitter()->idx
+                );
+                auto emitterColor = emitterHitInfo.mesh->getEmitter()->eval(wi);
+                auto emitterPdf = scene->pdfEmitterDirect(emitterQueryRecord);
+
+                auto cosTheta = std::abs(Frame::cosTheta(wi));
+
+                auto misWeight = weighting_heuristic(bsdfPdf, { bsdfPdf, emitterPdf });
+                misColor += misWeight * emitterColor * bsdfColor;
             }
+            end_bsdf_eval:
 
             accColor += misColor;
         }
