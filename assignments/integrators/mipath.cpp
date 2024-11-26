@@ -54,9 +54,9 @@ public:
 
                 float probabilityToDie = std::max(0.01f, Vector3f(bsdfColor.x(), bsdfColor.y(), bsdfColor.z()).norm());
                 if (bounce < m_rrMinBounces)
-                    probabilityToDie = 1.f;
+                    probabilityToDie = .9f;
 
-                if (emitter) {
+                if (emitter && bounce == 0) {
                     radiance += throughput * emitter->eval(wi);
                 }
 

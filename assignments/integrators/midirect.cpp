@@ -53,7 +53,6 @@ public:
             auto misColor = Color3f(0.f);
 
             // shoot ray against emitter
-            if (true)
             {
                 EmitterQueryRecord emitterSampleInfo{ hitInfo.p };
                 const auto emitterColor = scene->sampleEmitterDirect(emitterSampleInfo, sampler->next2D());
@@ -87,7 +86,6 @@ public:
             end_emitter_eval:
 
             // shoot ray with BSDF
-            if (true)
             {
                 BSDFQueryRecord bsdfQueryRecord(wi, hitInfo.uv);
                 const auto bsdfColor = bsdf->sample(bsdfQueryRecord, sampler->next2D());
@@ -138,26 +136,26 @@ private:
 
     using pdfvec = const std::vector<float>&;
 
-    static float weighting_heuristic(float pdf, pdfvec pdfs)
-    {
-        return uniform_wh(pdf, pdfs);
-    }
+static float weighting_heuristic(float pdf, pdfvec pdfs)
+{
+    return power_wh(pdf, pdfs);
+}
 
-    static float uniform_wh(float pdf, pdfvec pdfs)
-    {
-        const auto sum = std::transform_reduce(pdfs.cbegin(), pdfs.cend(), 0.f, std::plus<>(), [](float v){ return v > 0 ? 1.f : 0.f; });
-        if (!isnormal(sum))
-            return 0.f;
-        return (pdf > 0 ? 1.f : 0.f) / sum;
-    }
-    static float balance_wh(float pdf, pdfvec pdfs)
-    {
-        return pdf / std::reduce(pdfs.cbegin(), pdfs.cend(), 0.f, std::plus<>());
-    }
-    static float power_wh(float pdf, pdfvec pdfs)
-    {
-        return pdf*pdf / std::transform_reduce(pdfs.cbegin(), pdfs.cend(), 0.f, std::plus<>(), [](float v){ return v*v; });
-    }
+static float uniform_wh(float pdf, pdfvec pdfs)
+{
+    const auto sum = std::transform_reduce(pdfs.cbegin(), pdfs.cend(), 0.f, std::plus<>(), [](float v){ return v > 0 ? 1.f : 0.f; });
+    if (!isnormal(sum))
+        return 0.f;
+    return (pdf > 0 ? 1.f : 0.f) / sum;
+}
+static float balance_wh(float pdf, pdfvec pdfs)
+{
+    return pdf / std::reduce(pdfs.cbegin(), pdfs.cend(), 0.f, std::plus<>());
+}
+static float power_wh(float pdf, pdfvec pdfs)
+{
+    return pdf*pdf / std::transform_reduce(pdfs.cbegin(), pdfs.cend(), 0.f, std::plus<>(), [](float v){ return v*v; });
+}
 
 };
 

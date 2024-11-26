@@ -4,11 +4,11 @@
 
 <scene>
 	<integrator type="bsdfpath">
-		<integer name="maxBounces" value="30"/>
+		<integer name="maxBounces" value="2"/>
 	</integrator>
 
 	<sampler type="independent">
-		<integer name="sampleCount" value="1024"/>
+		<integer name="sampleCount" value="128"/>
 	</sampler>
 
 	<camera type="perspective">
@@ -21,7 +21,7 @@
 	</camera>
 
 	<!-- distant light to provide overall illumination -->
-	<!--mesh type="obj">
+	<mesh type="obj">
 		<string name="filename" value="meshes/sphere.obj"/>
 		<transform name="toWorld">
 			<scale value="0.5, 0.5, 0.5"/>
@@ -33,7 +33,7 @@
 		<bsdf type="diffuse">
 			<color name="albedo" value="0,0,0"/>
 		</bsdf>
-	</mesh-->
+	</mesh>
 
 	<mesh type="obj">
 		<string name="filename" value="meshes/sphere.obj"/>

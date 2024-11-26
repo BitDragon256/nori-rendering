@@ -10,3 +10,7 @@ cmake-build-debug/
 cmake-build-release/
 
 ext/
+
+*.obj
+*.exr
+*.png
